@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Movie;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -206,9 +207,24 @@ public class PopularMoviesAdapter extends RecyclerView.Adapter<RecyclerView.View
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(mContext, DetailActivity.class);
-                    intent.putExtra(DetailActivity.ID_INTENT, mMoviesList.get(getAdapterPosition()));
-                    mContext.startActivity(intent);
+                    if (MainActivity.mTwoPane) {
+                        // In two-pane mode, show the detail view in this activity by
+                        // adding or replacing the detail fragment using a
+                        // fragment transaction.
+                        Bundle args = new Bundle();
+                        args.putParcelable(DetailActivityFragment.DETAIL_PARCEL, mMoviesList.get(getAdapterPosition()));
+                        DetailActivityFragment fragment = new DetailActivityFragment();
+                        fragment.setArguments(args);
+
+                        ((MainActivity)mContext).getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.detail_movie_container, fragment, MainActivity.DETAILFRAGMENT_TAG)
+                                .commit();
+
+                    } else {
+                        Intent intent = new Intent(mContext, DetailActivity.class);
+                        intent.putExtra(DetailActivity.ID_INTENT, mMoviesList.get(getAdapterPosition()));
+                        mContext.startActivity(intent);
+                    }
 
 
                 }

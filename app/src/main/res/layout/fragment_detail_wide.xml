@@ -1,22 +1,34 @@
-<?xml version="1.0" encoding="utf-8"?>
-
-
 <LinearLayout android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:padding="15dp"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
     xmlns:android="http://schemas.android.com/apk/res/android">
-        <RelativeLayout
-            android:layout_width="match_parent"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="220dp"
+        android:orientation="horizontal">
+        <ImageView
+            android:layout_width="0dp"
             android:layout_height="220dp"
-            android:orientation="horizontal">
-            <ImageView
-                android:layout_width="150dp"
-                android:layout_height="220dp"
-                android:id="@+id/posterThumbnail"
-                android:src="@drawable/poster"
-                android:layout_marginLeft="10dp" />
+            android:layout_weight="2"
+            android:id="@+id/posterThumbnail"
+            android:src="@drawable/poster"
+            android:layout_marginLeft="10dp" />
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_height="220dp"
+            android:layout_weight="2"
+            android:id="@+id/backdrop"
+            android:src="@drawable/poster"
+            android:layout_marginLeft="10dp"
+            android:visibility="gone"/>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:orientation="vertical">
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -81,9 +93,9 @@
                 android:gravity="center">
                 <ImageView
                     android:id="@+id/favorite"
-                    android:layout_width="40dp"
+                    android:layout_width="60dp"
                     android:clickable="true"
-                    android:layout_height="40dp"
+                    android:layout_height="60dp"
                     android:src="@drawable/ic_favorite_border_black_24dp"
                     android:duplicateParentState="true"
                     android:tint="@color/redholo"
@@ -92,39 +104,39 @@
 
                     />
             </LinearLayout>
+        </LinearLayout>
 
-        </RelativeLayout>
-
-        <RelativeLayout
-            xmlns:card_view="http://schemas.android.com/apk/res-auto"
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/card_view"
-            android:background="@android:color/background_light"
+    </LinearLayout>
+    <RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/card_view"
+        android:background="@android:color/background_light"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="15dp"
+        android:layout_marginTop="15dp"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Summary"
+            android:textSize="20sp"
+            android:id="@+id/summary"/>
+        <View
             android:layout_width="match_parent"
+            android:layout_below="@id/summary"
+            android:layout_height="1dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="15dp"
+            android:id="@+id/summary_div"
+            android:background="@android:color/darker_gray"/>
+        <WebView
+            android:id="@+id/webDescription"
+            android:layout_width="match_parent"
+            android:layout_below="@id/summary_div"
             android:layout_height="match_parent"
-            android:layout_marginTop="10dp"
-            android:padding="15dp"
-            >
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Summary"
-                android:textSize="20sp"
-                android:id="@+id/summary"/>
-            <View
-                android:layout_width="match_parent"
-                android:layout_below="@id/summary"
-                android:layout_height="1dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="15dp"
-                android:id="@+id/summary_div"
-                android:background="@android:color/darker_gray"/>
-            <WebView
-                android:id="@+id/webDescription"
-                android:layout_width="match_parent"
-                android:layout_below="@id/summary_div"
-                android:layout_height="match_parent"/>
-        </RelativeLayout>
+            />
+    </RelativeLayout>
 
     <RelativeLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
@@ -133,6 +145,7 @@
         android:layout_height="match_parent"
         android:background="@android:color/background_light"
         android:layout_marginTop="10dp"
+        android:layout_marginRight="8dp"
         android:padding="15dp">
         <TextView
             android:layout_width="wrap_content"
@@ -165,9 +178,10 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/layout_reviews"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="200dp"
         android:background="@android:color/background_light"
         android:layout_marginTop="10dp"
+        android:layout_marginLeft="8dp"
         android:padding="15dp">
 
         <TextView
@@ -192,7 +206,5 @@
             android:clickable="true"
             android:scrollbars="vertical"/>
     </RelativeLayout>
-
-    </LinearLayout>
-
+</LinearLayout>
 

@@ -91,9 +91,11 @@ public class DetailActivityFragment extends Fragment {
     @Bind(R.id.posterThumbnail) ImageView poster;
     @Bind(R.id.webDescription) WebView webDescription;
     @Bind(R.id.favorite) ImageView favorite;
+    public static final String DETAIL_PARCEL = "URI";
     private boolean checkFavorite = false;
     private String LOCAL_PATH_POSTER = "Poster";
     private String LOCAL_PATH_BACKDROP = "Backdrop";
+    private boolean show = false;
     public DetailActivityFragment() {
     }
     public void onCreate(Bundle savedInstanceState) {
@@ -116,7 +118,10 @@ public class DetailActivityFragment extends Fragment {
 
         return shareIntent;
     }
-
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+    }
 
 
     @Override
@@ -139,168 +144,174 @@ public class DetailActivityFragment extends Fragment {
         String sort = MainActivityFragment.sort;
         ButterKnife.bind(this, rootView);
         Intent intent = getActivity().getIntent();
+        Bundle arguments = getArguments();
         if (intent.hasExtra(ID_INTENT)) {
             mMovie = intent.getParcelableExtra(ID_INTENT);
-        } else {
-            throw new IllegalArgumentException("Detail activity must receive a movie parcelable");
-        }
-        backdrop = (ImageView) getActivity().findViewById(R.id.backdrop);
-
-
-        String dateString = mMovie.getDate();
-        SimpleDateFormat ori = new SimpleDateFormat("yy-MM-dd");
-        Date date_ori = new Date();
-        try {
-            date_ori = ori.parse(dateString);
-        } catch (java.text.ParseException e) {
-            e.printStackTrace();
-        }
-        SimpleDateFormat convert = new SimpleDateFormat("MMM yyyy");
-        String date_convert = convert.format(date_ori);
-        title.setText(" "+mMovie.getTitle());
-        date.setText(" "+date_convert);
-        popularity.setText(" "+mMovie.getPopularity());
-        rating.setText(" "+mMovie.getRating());
-
-        String myData = String.valueOf(Html
-                .fromHtml("<![CDATA[<body style=\"text-align:justify;color:#222222; \">"
-                        + mMovie.getDescription()
-                        + "</body>]]>"));
-        webDescription.loadData(myData, "text/html; charset=utf-8", "utf-8");
-
-        if(sort.equals("My Favorite")) {
-            Picasso.with(getContext())
-                    .load(new File(mMovie.getLocalPoster(), mMovie.getId()+".PNG"))
-                    .into(poster);
-            Picasso.with(getActivity())
-                    .load(new File(mMovie.getLocalBackdrop(), mMovie.getId()+".PNG"))
-                    .into(backdrop);
-        }else {
-            Picasso.with(getContext())
-                    .load(mMovie.getPoster())
-                    .into(poster);
-            Picasso.with(getActivity())
-                    .load(mMovie.getBackdrop())
-                    .into(backdrop);
-        }
-        backdrop.setColorFilter(Color.GRAY, PorterDuff.Mode.DARKEN);
-        Cursor movieCursor = getActivity().getContentResolver().query(
-                MoviesContract.MovieEntry.CONTENT_URI,
-                null,
-                MoviesContract.MovieEntry.TABLE_NAME+"."+MoviesContract.MovieEntry.COLUMN1_MOVIE_ID +" = "+mMovie.getId(),
-                null,
-                null
-        );
-
-        if (movieCursor.getCount() > 0) {
-            favorite.setImageResource(R.drawable.ic_favorite_black_24dp);
-            setFavorite(true);
+            show=true;
+            backdrop = (ImageView) getActivity().findViewById(R.id.backdrop);
+        } else if (arguments != null) {
+            mMovie = arguments.getParcelable(DetailActivityFragment.DETAIL_PARCEL);
+            show=true;
+            backdrop = (ImageView) rootView.findViewById(R.id.backdrop);
+            rootView.setVisibility(View.VISIBLE);
+        }else{
+            rootView.setVisibility(View.GONE);
         }
 
-        movieCursor.close();
-        favorite.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v){
-                if(!getFavorite()) {
-                    favorite.setImageResource(R.drawable.ic_favorite_black_24dp);
-                    poster.buildDrawingCache();
-                    Bitmap bmp_poster = poster.getDrawingCache();
-                    backdrop.buildDrawingCache();
-                    Bitmap bmp_backdrop = backdrop.getDrawingCache();
-                    String saved_poster = "";
-                    String saved_backdrop = "";
-                    try {
-                        saved_poster = saveToInternalStorage(bmp_poster, LOCAL_PATH_POSTER, mMovie.getId());
-                        saved_backdrop = saveToInternalStorage(bmp_backdrop, LOCAL_PATH_BACKDROP, mMovie.getId());
-                    } catch (IOException e) {
-                        e.printStackTrace();
+        if(show) {
+
+            String dateString = mMovie.getDate();
+            SimpleDateFormat ori = new SimpleDateFormat("yy-MM-dd");
+            Date date_ori = new Date();
+            try {
+                date_ori = ori.parse(dateString);
+            } catch (java.text.ParseException e) {
+                e.printStackTrace();
+            }
+            SimpleDateFormat convert = new SimpleDateFormat("MMM yyyy");
+            String date_convert = convert.format(date_ori);
+            title.setText(" " + mMovie.getTitle());
+            date.setText(" " + date_convert);
+            popularity.setText(" " + mMovie.getPopularity());
+            rating.setText(" " + mMovie.getRating());
+
+            String myData = String.valueOf(Html
+                    .fromHtml("<![CDATA[<body style=\"text-align:justify;color:#222222; \">"
+                            + mMovie.getDescription()
+                            + "</body>]]>"));
+            webDescription.loadData(myData, "text/html; charset=utf-8", "utf-8");
+
+            if (sort.equals("My Favorite")) {
+                Picasso.with(getContext())
+                        .load(new File(mMovie.getLocalPoster(), mMovie.getId() + ".PNG"))
+                        .into(poster);
+                Picasso.with(getActivity())
+                        .load(new File(mMovie.getLocalBackdrop(), mMovie.getId() + ".PNG"))
+                        .into(backdrop);
+            } else {
+                Picasso.with(getContext())
+                        .load(mMovie.getPoster())
+                        .into(poster);
+                Picasso.with(getActivity())
+                        .load(mMovie.getBackdrop())
+                        .into(backdrop);
+            }
+            backdrop.setColorFilter(Color.GRAY, PorterDuff.Mode.DARKEN);
+            Cursor movieCursor = getActivity().getContentResolver().query(
+                    MoviesContract.MovieEntry.CONTENT_URI,
+                    null,
+                    MoviesContract.MovieEntry.TABLE_NAME + "." + MoviesContract.MovieEntry.COLUMN1_MOVIE_ID + " = " + mMovie.getId(),
+                    null,
+                    null
+            );
+
+            if (movieCursor.getCount() > 0) {
+                favorite.setImageResource(R.drawable.ic_favorite_black_24dp);
+                setFavorite(true);
+            }
+
+            movieCursor.close();
+            favorite.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (!getFavorite()) {
+                        favorite.setImageResource(R.drawable.ic_favorite_black_24dp);
+                        poster.buildDrawingCache();
+                        Bitmap bmp_poster = poster.getDrawingCache();
+                        backdrop.buildDrawingCache();
+                        Bitmap bmp_backdrop = backdrop.getDrawingCache();
+                        String saved_poster = "";
+                        String saved_backdrop = "";
+                        try {
+                            saved_poster = saveToInternalStorage(bmp_poster, LOCAL_PATH_POSTER, mMovie.getId());
+                            saved_backdrop = saveToInternalStorage(bmp_backdrop, LOCAL_PATH_BACKDROP, mMovie.getId());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        Log.d("PATH POSTER", saved_poster);
+
+                        ContentValues values = MoviesProvider.getMovieContentValues(
+                                mMovie.getId(),
+                                mMovie.getTitle(),
+                                saved_poster,
+                                saved_backdrop,
+                                mMovie.getDescription(),
+                                mMovie.getDate(),
+                                mMovie.getPopularityOri(),
+                                mMovie.getRatingOri());
+                        Uri newUri = getContext().getContentResolver().insert(
+                                MoviesContract.MovieEntry.CONTENT_URI,
+                                values
+                        );
+                        long newID = ContentUris.parseId(newUri);
+                        if (newID > 0) {
+                            setFavorite(true);
+                            Toast.makeText(getContext(), "Mark as favorite", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(getContext(), "Process failed", Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        deleteFileBitmap(mMovie.getLocalPoster() + "/" + mMovie.getId() + ".PNG");
+                        deleteFileBitmap(mMovie.getLocalBackdrop() + "/" + mMovie.getId() + ".PNG");
+                        int row = getContext().getContentResolver().delete(
+                                MoviesContract.MovieEntry.CONTENT_URI,
+                                MoviesContract.MovieEntry.TABLE_NAME + "." + MoviesContract.MovieEntry.COLUMN1_MOVIE_ID + " = " + mMovie.getId(),
+                                null
+                        );
+                        if (row > 0) {
+                            favorite.setImageResource(R.drawable.ic_favorite_border_black_24dp);
+                            setFavorite(false);
+                            Toast.makeText(getContext(), "Unmark from favorite", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(getContext(), "Process failed", Toast.LENGTH_SHORT).show();
+                        }
                     }
-                    Log.d("PATH POSTER", saved_poster);
+                    // Query for all and validate
 
-                    ContentValues values = MoviesProvider.getMovieContentValues(
-                            mMovie.getId(),
-                            mMovie.getTitle(),
-                            saved_poster,
-                            saved_backdrop,
-                            mMovie.getDescription(),
-                            mMovie.getDate(),
-                            mMovie.getPopularityOri(),
-                            mMovie.getRatingOri());
-                    Uri newUri = getContext().getContentResolver().insert(
+                    //Check database
+                    Cursor movieCursor = getActivity().getContentResolver().query(
                             MoviesContract.MovieEntry.CONTENT_URI,
-                            values
-                    );
-                    long newID = ContentUris.parseId(newUri);
-                    if (newID > 0) {
-                        setFavorite(true);
-                        Toast.makeText(getContext(),"Mark as favorite", Toast.LENGTH_SHORT).show();
-                    }else{
-                        Toast.makeText(getContext(),"Process failed", Toast.LENGTH_SHORT).show();
-                    }
-                }else{
-                    deleteFileBitmap(mMovie.getLocalPoster()+"/"+mMovie.getId()+".PNG");
-                    deleteFileBitmap(mMovie.getLocalBackdrop()+"/"+mMovie.getId()+".PNG");
-                    int row = getContext().getContentResolver().delete(
-                            MoviesContract.MovieEntry.CONTENT_URI,
-                            MoviesContract.MovieEntry.TABLE_NAME+"."+MoviesContract.MovieEntry.COLUMN1_MOVIE_ID +" = "+mMovie.getId(),
+                            null,
+                            null,
+                            null,
                             null
                     );
-                    if (row > 0) {
-                        favorite.setImageResource(R.drawable.ic_favorite_border_black_24dp);
-                        setFavorite(false);
-                        Toast.makeText(getContext(),"Unmark from favorite", Toast.LENGTH_SHORT).show();
-                    }else{
-                        Toast.makeText(getContext(),"Process failed", Toast.LENGTH_SHORT).show();
+                    if (movieCursor == null) {
+                        Log.e("Provider", "Cursor Error");
+                    } else if (movieCursor.getCount() < 1) {
+                        Log.e("Provider", "Nothing to show");
+                    } else {
+                        while (movieCursor.moveToNext()) {
+                            Log.d("Provider", movieCursor.getString(0) + "-" + movieCursor.getString(1) + "-" + movieCursor.getString(2));
+                        }
                     }
-                }
-                // Query for all and validate
+                    movieCursor.close();
 
-                //Check database
-                Cursor movieCursor = getActivity().getContentResolver().query(
-                        MoviesContract.MovieEntry.CONTENT_URI,
-                        null,
-                        null,
-                        null,
-                        null
-                );
-                if (movieCursor == null) {
-                    Log.e("Provider", "Cursor Error");
                 }
-                else if (movieCursor.getCount() < 1) {
-                    Log.e("Provider", "Nothing to show");
-                }
-                else {
-                    while(movieCursor.moveToNext()){
-                        Log.d("Provider",movieCursor.getString(0)+"-"+movieCursor.getString(1)+"-"+movieCursor.getString(2));
-                    }
-                }
-                movieCursor.close();
+            });
+            pDialog = new ProgressDialog(getActivity());
+            pDialog.setMessage("Get Detail Information. . .");
+            pDialog.setCanceledOnTouchOutside(false);
+            pDialog.show();
 
-            }
-        });
-        pDialog = new ProgressDialog(getActivity());
-        pDialog.setMessage("Get Detail Information. . .");
-        pDialog.setCanceledOnTouchOutside(false);
-        pDialog.show();
-
-        Log.d("SORT", sort);
-        if(!sort.equals("My Favorite")) {
-            if (checkConnection())
-                loadTrailer();
-        }else{
-            ConnectionDetector cd = new ConnectionDetector(getActivity());
-            if(!cd.isConnectingToInternet()) {
-                RelativeLayout lv = (RelativeLayout) rootView.findViewById(R.id.layout_video);
-                lv.setVisibility(View.GONE);
-                RelativeLayout rv = (RelativeLayout) rootView.findViewById(R.id.layout_reviews);
-                rv.setVisibility(View.GONE);
-                Toast.makeText(getContext(),"Connection not available", Toast.LENGTH_SHORT).show();
-                hidePDialog();
-            }else{
-                loadTrailer();
+            Log.d("SORT", sort);
+            if (!sort.equals("My Favorite")) {
+                if (checkConnection())
+                    loadTrailer();
+            } else {
+                ConnectionDetector cd = new ConnectionDetector(getActivity());
+                if (!cd.isConnectingToInternet()) {
+                    RelativeLayout lv = (RelativeLayout) rootView.findViewById(R.id.layout_video);
+                    lv.setVisibility(View.GONE);
+                    RelativeLayout rv = (RelativeLayout) rootView.findViewById(R.id.layout_reviews);
+                    rv.setVisibility(View.GONE);
+                    Toast.makeText(getContext(), "Connection not available", Toast.LENGTH_SHORT).show();
+                    hidePDialog();
+                } else {
+                    loadTrailer();
+                }
             }
         }
-
        return rootView;
     }
 
@@ -335,7 +346,7 @@ public class DetailActivityFragment extends Fragment {
             String url_add = mMovie.getId()+"/videos";
             Call<MoviesVideo.VideosResult> call;
             MovieApi movieApi = retrofit.create(MovieApi.class);
-            call = movieApi.videoMovies(url_add, BuildConfig.OPEN_WEATHER_MAP_API_KEY);
+            call = movieApi.videoMovies(url_add, BuildConfig.POPULAR_MOVIES_API_KEY);
             Log.d("URL JSON", call.toString());
             call.enqueue(new Callback<MoviesVideo.VideosResult>() {
                 @Override
@@ -373,7 +384,7 @@ public class DetailActivityFragment extends Fragment {
         String url_add = mMovie.getId()+"/reviews";
         Call<MoviesReview.ReviewsResult> call;
         MovieApi movieApi = retrofit.create(MovieApi.class);
-        call = movieApi.reviewMovies(url_add, BuildConfig.OPEN_WEATHER_MAP_API_KEY);
+        call = movieApi.reviewMovies(url_add, BuildConfig.POPULAR_MOVIES_API_KEY);
         Log.d("URL JSON", call.toString());
         call.enqueue(new Callback<MoviesReview.ReviewsResult>() {
             @Override

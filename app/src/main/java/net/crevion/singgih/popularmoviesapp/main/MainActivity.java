@@ -15,8 +15,9 @@ import net.crevion.singgih.popularmoviesapp.adapter.PopularMoviesAdapter;
 import net.crevion.singgih.popularmoviesapp.model.Movies;
 
 public class MainActivity extends AppCompatActivity {
-
-     Toolbar toolbar;
+    public static final String DETAILFRAGMENT_TAG = "DFTAG";
+    Toolbar toolbar;
+    public static boolean mTwoPane;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,7 +28,20 @@ public class MainActivity extends AppCompatActivity {
         String sort = pref.getString(getString(R.string.pref_sort_key),getString(R.string.pref_sort_default));
         setActionBarTitle("Popular Movies ("+sort+")");
 
-
+        if(findViewById(R.id.detail_movie_container)!=null){
+            mTwoPane = true;
+            if (savedInstanceState == null) {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.detail_movie_container, new DetailActivityFragment(), DETAILFRAGMENT_TAG)
+                        .commit();
+            }
+        }else{
+            mTwoPane=false;
+            getSupportActionBar().setElevation(0f);
+        }
+//
+//        MainActivityFragment mainFragment =  ((MainActivityFragment)getSupportFragmentManager()
+//                .findFragmentById(R.id.fragment));
     }
 
     @Override
@@ -49,7 +63,4 @@ public class MainActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
-
-
-
 }

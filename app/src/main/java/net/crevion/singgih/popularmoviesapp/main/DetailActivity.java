@@ -58,29 +58,12 @@ public class DetailActivity extends AppCompatActivity {
             throw new IllegalArgumentException("Detail activity must receive a movie parcelable");
         }
         getSupportActionBar().setTitle(mMovie.getTitle());
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // update the location in our second pane using the fragment manager
 
-//        String dateString = mMovie.getDate();
-//        SimpleDateFormat ori = new SimpleDateFormat("yy-MM-dd");
-//        Date date_ori = new Date();
-//        try {
-//            date_ori = ori.parse(dateString);
-//        } catch (java.text.ParseException e) {
-//            e.printStackTrace();
-//        }
-//        SimpleDateFormat convert = new SimpleDateFormat("MMM d, yyyy");
-//        String date_convert = convert.format(date_ori);
-//
-//        date.setText(" "+date_convert);
-//        popularity.setText(" "+mMovie.getPopularity());
-//        rating.setText(" "+mMovie.getRating());
-//        description.setText(" "+mMovie.getDescription());
-//        Picasso.with(this)
-//                .load(mMovie.getPoster())
-//                .into(poster);
-//        Picasso.with(this)
-//                .load(mMovie.getBackdrop())
-//                .into(backdrop);
-//        backdrop.setColorFilter(Color.GRAY, PorterDuff.Mode.DARKEN);
     }
 }

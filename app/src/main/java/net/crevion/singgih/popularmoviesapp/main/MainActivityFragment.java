@@ -1,6 +1,7 @@
 package net.crevion.singgih.popularmoviesapp.main;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -17,8 +18,10 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import net.crevion.singgih.popularmoviesapp.BuildConfig;
@@ -53,6 +56,8 @@ public class MainActivityFragment extends Fragment
     private PopularMoviesAdapter mAdapter;
     RecyclerView rView;
     private ProgressDialog pDialog;
+    private int ORIENTATION_LANDSCAPE = 1;
+    private int ORIENTATION_PORTRAIT = 0;
 
     static final int COLUMN1_MOVIE_ID = 1;
     static final int COLUMN2_TITLE = 2;
@@ -62,12 +67,14 @@ public class MainActivityFragment extends Fragment
     static final int COLUMN6_DATE = 6;
     static final int COLUMN7_POPULARITY = 7;
     static final int COLUMN8_RATING = 8;
+
     //MainActivity main = new MainActivity();
     public MainActivityFragment() {
     }
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        setRetainInstance(true);
     }
 
     public  void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -133,8 +140,11 @@ public class MainActivityFragment extends Fragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-
-        lLayout = new GridLayoutManager(getActivity(), 2);
+        if(getScreenOrientation(getActivity())==ORIENTATION_PORTRAIT) {
+            lLayout = new GridLayoutManager(getActivity(), 2);
+        }else{
+            lLayout = new GridLayoutManager(getActivity(), 3);
+        }
         rView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
         rView.setHasFixedSize(true);
         rView.setLayoutManager(lLayout);
@@ -208,9 +218,9 @@ public class MainActivityFragment extends Fragment
             MovieApi movieApi = retrofit.create(MovieApi.class);
             final String page = Integer.toString(currentPage);
             if (sort.equals("Most Popular")) {
-                call = movieApi.popularMovies(BuildConfig.OPEN_WEATHER_MAP_API_KEY, page);
+                call = movieApi.popularMovies(BuildConfig.POPULAR_MOVIES_API_KEY, page);
             } else {
-                call = movieApi.ratedMovies(BuildConfig.OPEN_WEATHER_MAP_API_KEY, page);
+                call = movieApi.ratedMovies(BuildConfig.POPULAR_MOVIES_API_KEY, page);
             }
             final int curr_page = currentPage;
             call.enqueue(new Callback<Movies.MovieResult>() {
@@ -330,4 +340,17 @@ public class MainActivityFragment extends Fragment
 
     }
 
+    public int getScreenOrientation(Context context){
+        final int screenOrientation = ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getOrientation();
+        switch (screenOrientation) {
+            case Surface.ROTATION_0:
+                return ORIENTATION_PORTRAIT;
+            case Surface.ROTATION_90:
+                return ORIENTATION_LANDSCAPE;
+            case Surface.ROTATION_180:
+                return ORIENTATION_PORTRAIT;
+            default:
+                return ORIENTATION_LANDSCAPE;
+        }
+    }
 }
