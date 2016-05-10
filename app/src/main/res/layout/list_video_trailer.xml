@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:layout_margin="15dp"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@drawable/touch_selector_trailer">
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+    <ImageView
+        android:id="@+id/trailerThumb"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_margin="10dp"
+        android:src="@drawable/trailer"/>
+        <ImageView
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_margin="10dp"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_play_circle_outline_black_24dp"
+            android:scaleX="2"
+            android:scaleY="2"
+            android:tint="@color/white"/>
+    </FrameLayout>
+    <TextView
+        android:id="@+id/trailerName"
+        android:layout_width="match_parent"
+        android:textSize="16sp"
+        android:layout_margin="10dp"
+        android:layout_height="wrap_content"
+        android:text="Trailer Video 1"/>
+    </LinearLayout>
