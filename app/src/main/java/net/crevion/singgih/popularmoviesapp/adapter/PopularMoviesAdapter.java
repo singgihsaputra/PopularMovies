@@ -24,6 +24,7 @@ import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -117,8 +118,13 @@ public class PopularMoviesAdapter extends RecyclerView.Adapter<RecyclerView.View
                         .centerCrop()
                         .into(viewHolder.moviePoster);
             }else{
-                Bitmap poster_file = DetailActivityFragment.loadImageFromStorage(movie.getLocalPoster(), movie.getId());
-                viewHolder.moviePoster.setImageBitmap(poster_file);
+
+                Picasso.with(mContext)
+                        .load(new File(movie.getLocalPoster(), movie.getId()+".PNG"))
+                        .placeholder(R.drawable.background)
+                        .fit()
+                        .centerCrop()
+                        .into(viewHolder.moviePoster);
             }
         }else if (holder instanceof LoadingViewHolder) {
             LoadingViewHolder loadingViewHolder = (LoadingViewHolder) holder;

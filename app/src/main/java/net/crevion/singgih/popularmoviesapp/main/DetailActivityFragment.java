@@ -169,14 +169,12 @@ public class DetailActivityFragment extends Fragment {
         webDescription.loadData(myData, "text/html; charset=utf-8", "utf-8");
 
         if(sort.equals("My Favorite")) {
-            Bitmap poster_file = loadImageFromStorage(mMovie.getLocalPoster(), mMovie.getId());
-            //Log.d("Poster file", mMovie.getLocalPoster() + mMovie.getId() + ".PNG");
-            poster.setImageBitmap(poster_file);
-            Bitmap backdrop_file = loadImageFromStorage(mMovie.getLocalBackdrop(), mMovie.getId());
-            //Log.d("Backdrop file", mMovie.getLocalBackdrop() + mMovie.getId() + ".PNG");
-            backdrop.setImageBitmap(backdrop_file);
-            backdrop.setColorFilter(Color.GRAY, PorterDuff.Mode.DARKEN);
-
+            Picasso.with(getContext())
+                    .load(new File(mMovie.getLocalPoster(), mMovie.getId()+".PNG"))
+                    .into(poster);
+            Picasso.with(getActivity())
+                    .load(new File(mMovie.getLocalBackdrop(), mMovie.getId()+".PNG"))
+                    .into(backdrop);
         }else {
             Picasso.with(getContext())
                     .load(mMovie.getPoster())
@@ -185,6 +183,7 @@ public class DetailActivityFragment extends Fragment {
                     .load(mMovie.getBackdrop())
                     .into(backdrop);
         }
+        backdrop.setColorFilter(Color.GRAY, PorterDuff.Mode.DARKEN);
         Cursor movieCursor = getActivity().getContentResolver().query(
                 MoviesContract.MovieEntry.CONTENT_URI,
                 null,
@@ -207,7 +206,7 @@ public class DetailActivityFragment extends Fragment {
                     poster.buildDrawingCache();
                     Bitmap bmp_poster = poster.getDrawingCache();
                     backdrop.buildDrawingCache();
-                    Bitmap bmp_backdrop = poster.getDrawingCache();
+                    Bitmap bmp_backdrop = backdrop.getDrawingCache();
                     String saved_poster = "";
                     String saved_backdrop = "";
                     try {
@@ -437,21 +436,6 @@ public class DetailActivityFragment extends Fragment {
             fos.close();
         }
         return directory.getAbsolutePath();
-    }
-
-    public static Bitmap loadImageFromStorage(String path, String name)
-    {
-        try {
-            File f=new File(path, name+".PNG");
-            Bitmap b = BitmapFactory.decodeStream(new FileInputStream(f));
-            return b;
-        }
-        catch (FileNotFoundException e)
-        {
-            e.printStackTrace();
-        }
-        return null;
-
     }
 
     private void deleteFileBitmap(String path){

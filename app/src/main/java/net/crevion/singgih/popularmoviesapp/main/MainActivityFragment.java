@@ -124,7 +124,8 @@ public class MainActivityFragment extends Fragment
     public void onResume() {
         super.onResume();
         if(sort.equals("My Favorite")){
-            refresh();
+            swipeRefreshLayout.setEnabled(false);
+            loadFavorite();
         }
     }
 
