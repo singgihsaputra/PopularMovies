@@ -31,6 +31,7 @@ import net.crevion.singgih.popularmoviesapp.data.MoviesContract;
 import net.crevion.singgih.popularmoviesapp.model.Movies;
 import net.crevion.singgih.popularmoviesapp.network.ConnectionDetector;
 import net.crevion.singgih.popularmoviesapp.network.MovieApi;
+import net.crevion.singgih.popularmoviesapp.ui.AboutUs;
 import net.crevion.singgih.popularmoviesapp.ui.EndlessRecyclerOnScrollListener;
 
 
@@ -99,6 +100,9 @@ public class MainActivityFragment extends Fragment
             sort = pref.getString(getString(R.string.pref_sort_key),getString(R.string.pref_sort_default));
             ((MainActivity) getActivity()).setActionBarTitle("Popular Movies (My Favorite)");
             refresh();
+        }else{
+            Intent intent = new Intent(getContext(), AboutUs.class);
+            startActivity(intent);
         }
 
         return super.onOptionsItemSelected(item);
